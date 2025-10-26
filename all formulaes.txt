@@ -1,0 +1,139 @@
+Electroplating Thickness Calculation – Detailed Notes
+
+==============================================================================
+1. Fundamental Electroplating Formula
+==============================================================================
+
+Electroplating deposits metal ions as a thin, uniform layer on another surface by passing electric current through an electrolyte. The mass of metal deposited is calculated using Faraday’s Law of Electrolysis:
+
+    Deposited Mass, m = (I × t × M × Efficiency) / (n × F)
+
+Where:
+    I         : Current (Amperes, A)
+    t         : Time (seconds, s)
+    M         : Molar Mass of metal (grams/mole, g/mol)
+    Efficiency: Fraction of current producing plating (e.g., 95% = 0.95)
+    n         : Valency (number of electrons exchanged per ion)
+    F         : Faraday's constant (96485 Coulombs per mole, C/mol)
+
+==============================================================================
+2. Thickness Formula
+==============================================================================
+
+After determining mass, thickness is computed from the formula:
+
+    Thickness, T = m / (rho × A)
+    Thickness in µm = [m / (rho × A)] × 10^4
+
+Where:
+    rho : Density of metal (grams/cm^3, g/cm^3)
+    A   : Surface area to be plated (cm^2)
+    10^4: Converts cm to micrometers (1 cm = 10,000 µm)
+
+==============================================================================
+3. Explanation of Terms
+==============================================================================
+
+Current (I)     : Amount of electricity passed through the electrolyte.
+Time (t)        : Total plating duration in seconds.
+Efficiency      : Portion of current resulting in actual metal deposition, typically between 85–98% (enter as a fraction or percentage in calculation).
+Molar Mass (M)  : Atomic mass of the element (g/mol), specific for each metal.
+Valency (n)     : Number of electrons transferred, corresponding to ion charge (e.g., Au has valency 1 in Au+ plating).
+Faraday Constant (F): Relates electric charge to amount of substance deposited (96485 C/mol).
+Density (rho)   : Mass per unit volume of metal (g/cm^3).
+Area (A)        : Plated item’s total surface (cm^2).
+
+==============================================================================
+4. Default Physical Constants
+==============================================================================
+
+| Metal       | Molar Mass (g/mol) | Density (g/cm^3) | Valency |
+|-------------|--------------------|------------------|---------|
+| Gold (Au)   | 196.96657          | 19.32            | 1       |
+| Nickel (Ni) | 58.6934            | 8.908            | 2       |
+| Copper (Cu) | 63.546             | 8.96             | 2       |
+
+==============================================================================
+5. Area Options
+==============================================================================
+
+Commonly used substrate areas:
+
+| Description         | Value (cm^2) |
+|---------------------|-------------|
+| 4-inch wafer        | 81          |
+| 6-inch wafer        | 182         |
+| 15x15 mm sample     | 2.25        |
+| 22x22 mm sample     | 4.84        |
+
+==============================================================================
+6. Worked Example Calculations
+==============================================================================
+
+Example: (All use Efficiency = 0.95, Area = 81 cm^2, Time = 3600 s, Current = 1A, F = 96485)
+
+---- For Gold Plating ----
+Molar Mass M = 196.96657 g/mol
+Density rho = 19.32 g/cm^3
+Valency n = 1
+
+Step 1:
+m = (1 × 3600 × 196.96657 × 0.95) / (1 × 96485)
+m ≈ 6.992 g
+
+Step 2:
+T = [6.992 / (19.32 × 81)] × 10^4
+T ≈ 44.7 um
+
+---- For Nickel Plating ----
+Molar Mass M = 58.6934 g/mol
+Density rho = 8.908 g/cm^3
+Valency n = 2
+
+Step 1:
+m = (1 × 3600 × 58.6934 × 0.95) / (2 × 96485)
+m ≈ 1.038 g
+
+Step 2:
+T = [1.038 / (8.908 × 81)] × 10^4
+T ≈ 14.4 um
+
+---- For Copper Plating ----
+Molar Mass M = 63.546 g/mol
+Density rho = 8.96 g/cm^3
+Valency n = 2
+
+Step 1:
+m = (1 × 3600 × 63.546 × 0.95) / (2 × 96485)
+m ≈ 1.125 g
+
+Step 2:
+T = [1.125 / (8.96 × 81)] × 10^4
+T ≈ 15.5 um
+
+==============================================================================
+7. Summary Table of Key Defaults
+==============================================================================
+
+| Metal      | Molar Mass | Density  | Valency | Example Thickness (um, for 1A, 4-inch wafer, 3600s, 95% eff.) |
+|------------|------------|----------|---------|--------------------------------------------------------------|
+| Gold (Au)  | 196.97     | 19.32    | 1       | 44.7                                                         |
+| Nickel (Ni)| 58.69      | 8.908    | 2       | 14.4                                                         |
+| Copper (Cu)| 63.55      | 8.96     | 2       | 15.5                                                         |
+
+==============================================================================
+Unit Conversions & Notes for Milliamps
+==============================================================================
+
+- 1 Ampere (A) = 1000 milliamps (mA)
+    To use milliamps: Current (A) = Current (mA) / 1000
+- 1 minute = 60 seconds, 1 hour = 3600 seconds
+- 1 cm^2 = 100 mm^2, 1 m^2 = 10,000 cm^2, 1 inch = 2.54 cm
+- 1 cm = 10,000 um, 1 mm = 1000 um, 1 cm = 10 mm
+- 1 g = 1000 mg
+- Always check & convert current to Amperes before calculation.
+
+Example:
+If input is 200 mA, use I = 200/1000 = 0.2 A in formulas above.
+
+==============================================================================

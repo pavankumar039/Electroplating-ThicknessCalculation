@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Electroplating Thickness Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #f4f7fb 0%, #e0e7ef 100%);
+      padding: 40px;
+      min-height: 100vh;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 25px;
+      letter-spacing: 1.2px;
+    }
+    .container {
+      background: #fff;
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 30px 38px 35px 38px;
+      border-radius: 14px;
+      box-shadow: 0 8px 32px rgba(44,62,80,0.14), 0 1.5px 3px rgba(0,0,0,0.03);
+      opacity: 0;
+      transform: translateY(40px);
+      animation: fadeUp 1s cubic-bezier(.3,1.5,.5,1) forwards;
+    }
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-top: 18px;
+      color: #39587a;
+      letter-spacing: 0.03em;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 7px;
+      border: 1.5px solid #bfc7d1;
+      font-size: 16px;
+      margin-bottom: 3px;
+      background: #f5f8fb;
+      transition: border 0.2s;
+    }
+    input:focus, select:focus {
+      border-color: #3988f5;
+      background: #eff6fb;
+      outline: none;
+    }
+    .time-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 0;
+    }
+    .time-row input {
+      width: 100%;
+      margin-top: 2px;
+      font-size: 15px;
+      padding: 8px;
+    }
+    .time-label {
+      font-weight: normal;
+      font-size: 13px;
+      margin-bottom: 0;
+      color: #577187;
+      margin-top: 5px;
+    }
+    button {
+      width: 100%;
+      margin-top: 28px;
+      background: linear-gradient(90deg, #3988f5 0%, #42d9c4 100%);
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: transform 0.13s cubic-bezier(.16,.93,.69,1.08), box-shadow 0.15s;
+      box-shadow: 0 2px 14px rgba(66, 217, 196, 0.10);
+      position: relative;
+      z-index: 0;
+      overflow: hidden;
+    }
+    button:before {
+      content: "";
+      position: absolute;
+      top:0; left:0; right:0; bottom:0;
+      background: linear-gradient(120deg,rgba(255,255,255,0.13) 0%,rgba(255,255,255,0.04) 100%);
+      z-index: -1;
+    }
+    button:hover {
+      transform: scale(1.035);
+      box-shadow: 0 4px 26px rgba(66, 217, 196, 0.16);
+    }
+    button:active {
+      transform: scale(0.97);
+    }
+    #result {
+      text-align: center;
+      font-size: 21px;
+      font-weight: bold;
+      margin-top: 28px;
+      color: #168570;
+      opacity: 0;
+      animation: fadeResult .7s ease-in-out forwards;
+    }
+    .shimmer {
+      background: linear-gradient(90deg, #fff 15%, #e0f2fd 40%, #fff 65%);
+      background-size: 200% 100%;
+      animation: shimmerAnim 1.5s linear 1;
+    }
+    @keyframes shimmerAnim {
+      0%   { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    @keyframes fadeResult {
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Electroplating Thickness Calculator</h1>
+
+  <div class="container">
+    <label for="metal">Select Metal:</label>
+    <select id="metal" onchange="setDefaults()">
+      <option value="gold">Gold (Au)</option>
+      <option value="nickel">Nickel (Ni)</option>
+      <option value="copper">Copper (Cu)</option>
+    </select>
+
+    <label for="current">Current (A):</label>
+    <input type="number" id="current" placeholder="Enter current in Amperes">
+
+    <label>Time:</label>
+    <div class="time-row">
+      <div>
+        <input type="number" id="hours" min="0" placeholder="Hrs">
+        <div class="time-label">Hours</div>
+      </div>
+      <div>
+        <input type="number" id="minutes" min="0" max="59" placeholder="Min">
+        <div class="time-label">Minutes</div>
+      </div>
+      <div>
+        <input type="number" id="seconds" min="0" max="59" placeholder="Sec">
+        <div class="time-label">Seconds</div>
+      </div>
+    </div>
+
+    <label for="efficiency">Efficiency (%):</label>
+    <input type="number" id="efficiency" placeholder="e.g. 95">
+
+    <label for="molarMass">Molar Mass (g/mol):</label>
+    <input type="number" id="molarMass" step="any">
+
+    <label for="valency">Valency (n):</label>
+    <input type="number" id="valency" step="any">
+
+    <label for="density">Density (g/cm³):</label>
+    <input type="number" id="density" step="any">
+
+    <label for="area">Select Area:</label>
+    <select id="area">
+      <option value="81">4-inch Wafer (≈81 cm²)</option>
+      <option value="182">6-inch Wafer (≈182 cm²)</option>
+      <option value="2.25">15×15 mm (2.25 cm²)</option>
+      <option value="4.84">22×22 mm (4.84 cm²)</option>
+    </select>
+
+    <button onclick="calculateThickness()" id="calcBtn">Calculate Thickness</button>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function setDefaults() {
+      const metal = document.getElementById('metal').value;
+      if (metal === 'gold') {
+        document.getElementById('molarMass').value = 196.96657;
+        document.getElementById('density').value = 19.32;
+        document.getElementById('valency').value = 1;
+      } else if (metal === 'nickel') {
+        document.getElementById('molarMass').value = 58.6934;
+        document.getElementById('density').value = 8.908;
+        document.getElementById('valency').value = 2;
+      } else if (metal === 'copper') {
+        document.getElementById('molarMass').value = 63.546;
+        document.getElementById('density').value = 8.96;
+        document.getElementById('valency').value = 2;
+      }
+    }
+
+    function calculateThickness() {
+      const F = 96485;
+      const I = parseFloat(document.getElementById('current').value);
+
+      // Time input
+      const hrs = parseInt(document.getElementById('hours').value) || 0;
+      const mins = parseInt(document.getElementById('minutes').value) || 0;
+      const secs = parseInt(document.getElementById('seconds').value) || 0;
+      const t = (hrs * 3600) + (mins * 60) + secs;
+
+      const E = parseFloat(document.getElementById('efficiency').value) / 100;
+      const M = parseFloat(document.getElementById('molarMass').value);
+      const n = parseFloat(document.getElementById('valency').value);
+      const rho = parseFloat(document.getElementById('density').value);
+      const A = parseFloat(document.getElementById('area').value);
+
+      const resultDiv = document.getElementById('result');
+      resultDiv.classList.remove('shimmer');
+      resultDiv.style.opacity = 0;
+
+      if ([I, t, E, M, n, rho, A].some(val => isNaN(val) || val === 0)) {
+        setTimeout(() => {
+          resultDiv.innerHTML = "⚠️ Please fill all values correctly.";
+          resultDiv.style.color = "#c0392b";
+          resultDiv.classList.add('shimmer');
+          resultDiv.style.opacity = 1;
+        }, 160);
+        return;
+      }
+
+      const mass = (I * t * M * E) / (n * F);
+      const thickness = (mass / (rho * A)) * 1e4;
+
+      setTimeout(() => {
+        resultDiv.innerHTML =
+          "Estimated Coating Thickness: <span style='color:#2d45c1'>" + thickness.toFixed(3) + " µm</span>";
+        resultDiv.style.color = "#168570";
+        resultDiv.classList.add('shimmer');
+        resultDiv.style.opacity = 1;
+      }, 180);
+    }
+
+    window.onload = setDefaults;
+  </script>
+
+</body>
+</html>
