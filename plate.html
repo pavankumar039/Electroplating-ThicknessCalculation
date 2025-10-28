@@ -85,7 +85,7 @@
       <option value="2.25">15×15 mm (2.25 cm²)</option>
       <option value="4.84">22×22 mm (4.84 cm²)</option>
     </select>
-    <button type="button" class="toggle-btn" onclick="togglePulse()">Reverse Pulse Plating</button>
+    <button type="button" class="toggle-btn" onclick="togglePulse()">Reverse Pulse/Pulse Plating</button>
     <div id="pulseFields">
       <div class="pulse-row">
         <div>
@@ -99,12 +99,12 @@
       </div>
       <div class="pulse-row">
         <div>
-          <label for="tr">Reverse ON time (s):</label>
-          <input type="number" id="tr" min="0">
+          <label for="tr">Reverse ON time (s, optional):</label>
+          <input type="number" id="tr" min="0" placeholder="Optional">
         </div>
         <div>
-          <label for="tr_off">Reverse OFF time (s):</label>
-          <input type="number" id="tr_off" min="0">
+          <label for="tr_off">Reverse OFF time (s, optional):</label>
+          <input type="number" id="tr_off" min="0" placeholder="Optional">
         </div>
       </div>
       <div class="pulse-row">
@@ -113,8 +113,8 @@
           <input type="number" id="If" step="any">
         </div>
         <div>
-          <label for="Ir">Reverse current (A):</label>
-          <input type="number" id="Ir" step="any">
+          <label for="Ir">Reverse current (A, optional):</label>
+          <input type="number" id="Ir" step="any" placeholder="Optional">
         </div>
       </div>
       <label for="totalTime">Total Plating Time:</label>
@@ -180,7 +180,7 @@
       document.getElementById('classicLabel').style.display = pulseMode ? "none" : "block";
       document.getElementById('hours').parentElement.parentElement.style.display = pulseMode ? "none" : "flex";
       document.getElementsByClassName('time-row')[1].style.display = pulseMode ? "none" : "flex";
-      document.getElementsByClassName('time-row')[0].style.display = pulseMode ? "flex" : "flex"; // Pulse
+      document.getElementsByClassName('time-row')[0].style.display = pulseMode ? "flex" : "flex";
     }
 
     function calculateThickness() {
@@ -194,26 +194,25 @@
       resultDiv.classList.remove('shimmer');
       resultDiv.style.opacity = 0;
 
-      // Pulse mode
       if (pulseMode) {
+        // Pulse Plating
         const tf = parseFloat(document.getElementById('tf').value);
         const tf_off = parseFloat(document.getElementById('tf_off').value) || 0;
-        const tr = parseFloat(document.getElementById('tr').value);
+        const tr = parseFloat(document.getElementById('tr').value) || 0;
         const tr_off = parseFloat(document.getElementById('tr_off').value) || 0;
         const If = parseFloat(document.getElementById('If').value);
-        const Ir = parseFloat(document.getElementById('Ir').value);
+        const Ir = parseFloat(document.getElementById('Ir').value) || 0;
 
-        // Pulse total time
         const pulse_hrs = parseInt(document.getElementById('pulse_hours').value) || 0;
         const pulse_mins = parseInt(document.getElementById('pulse_minutes').value) || 0;
         const pulse_secs = parseInt(document.getElementById('pulse_seconds').value) || 0;
         const Ttotal = (pulse_hrs * 3600) + (pulse_mins * 60) + pulse_secs;
 
-        // One cycle duration
+        // Cycle calculation
         const Tcycle = tf + tf_off + tr + tr_off;
-        if ([tf, tr, If, Ir, Tcycle, Ttotal, M, n, rho, A, E].some(v => isNaN(v) || v <= 0)) {
+        if ([tf, If, Tcycle, Ttotal, M, n, rho, A, E].some(v => isNaN(v) || v <= 0)) {
           setTimeout(() => {
-            resultDiv.innerHTML = "⚠️ Please fill all pulse plating values correctly.";
+            resultDiv.innerHTML = "⚠️ Please fill at least forward pulse fields and check input values.";
             resultDiv.style.color = "#c0392b";
             resultDiv.classList.add('shimmer');
             resultDiv.style.opacity = 1;
@@ -223,19 +222,23 @@
         const Ncycles = Math.floor(Ttotal / Tcycle);
         const tf_total = Ncycles * tf;
         const tr_total = Ncycles * tr;
-        const Qnet = (If * tf_total) - (Ir * tr_total);
+        let Qnet;
+        // Forward only if reverse current/time not provided
+        if (Ir === 0 || tr === 0) {
+          Qnet = If * tf_total;
+        } else {
+          Qnet = (If * tf_total) - (Ir * tr_total);
+        }
 
         // Net charge passed (Coulombs), with efficiency
         const Qeff = Qnet * E;
-
-        // Faraday's Law
         const mass = (M * Qeff) / (n * F);
         const thickness = (mass / (rho * A)) * 1e4;
-
         setTimeout(() => {
           resultDiv.innerHTML =
-            "Estimated Reverse Pulse Thickness: <span style='color:#d9643a'>" + thickness.toFixed(3) + " µm</span><br>" +
-            "(Cycles: " + Ncycles + ", Forward ON total: " + tf_total + " s, Reverse ON total: " + tr_total + " s)";
+            "<b>Estimated Pulse Plating Thickness:</b> <span style='color:#d9643a'>" + thickness.toFixed(3) + " µm</span><br>" +
+            "(Cycles: " + Ncycles + ", Forward ON total: " + tf_total + " s" +
+            (tr_total > 0 ? ", Reverse ON total: " + tr_total + " s" : "") + ")";
           resultDiv.style.color = "#d9643a";
           resultDiv.classList.add('shimmer');
           resultDiv.style.opacity = 1;
@@ -248,7 +251,6 @@
         const mins = parseInt(document.getElementById('minutes').value) || 0;
         const secs = parseInt(document.getElementById('seconds').value) || 0;
         const t = (hrs * 3600) + (mins * 60) + secs;
-
         if ([I, t, E, M, n, rho, A].some(val => isNaN(val) || val === 0)) {
           setTimeout(() => {
             resultDiv.innerHTML = "⚠️ Please fill all values correctly.";
@@ -258,12 +260,11 @@
           }, 160);
           return;
         }
-
         const mass = (I * t * M * E) / (n * F);
         const thickness = (mass / (rho * A)) * 1e4;
         setTimeout(() => {
           resultDiv.innerHTML =
-            "Estimated Coating Thickness: <span style='color:#2d45c1'>" + thickness.toFixed(3) + " µm</span>";
+            "<b>Estimated Coating Thickness:</b> <span style='color:#2d45c1'>" + thickness.toFixed(3) + " µm</span>";
           resultDiv.style.color = "#168570";
           resultDiv.classList.add('shimmer');
           resultDiv.style.opacity = 1;
@@ -273,6 +274,5 @@
 
     window.onload = setDefaults;
   </script>
-
 </body>
 </html>
