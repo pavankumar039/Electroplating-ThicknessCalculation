@@ -11,15 +11,10 @@
       padding: 40px;
       min-height: 100vh;
     }
-    h1 {
-      text-align: center;
-      color: #2c3e50;
-      margin-bottom: 25px;
-      letter-spacing: 1.2px;
-    }
+    h1 { text-align: center; color: #2c3e50; margin-bottom: 25px; letter-spacing: 1.2px; }
     .container {
       background: #fff;
-      max-width: 600px;
+      max-width: 650px;
       margin: 30px auto;
       padding: 30px 38px 35px 38px;
       border-radius: 14px;
@@ -28,111 +23,46 @@
       transform: translateY(40px);
       animation: fadeUp 1s cubic-bezier(.3,1.5,.5,1) forwards;
     }
-    @keyframes fadeUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    label {
-      font-weight: 600;
-      display: block;
-      margin-top: 18px;
-      color: #39587a;
-      letter-spacing: 0.03em;
-    }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    label { font-weight: 600; display: block; margin-top: 18px; color: #39587a; letter-spacing: 0.03em; }
     input, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-      border-radius: 7px;
-      border: 1.5px solid #bfc7d1;
-      font-size: 16px;
-      margin-bottom: 3px;
-      background: #f5f8fb;
-      transition: border 0.2s;
+      width: 100%; padding: 10px; margin-top: 6px; border-radius: 7px;
+      border: 1.5px solid #bfc7d1; font-size: 16px; margin-bottom: 3px; background: #f5f8fb; transition: border 0.2s;
     }
-    input:focus, select:focus {
-      border-color: #3988f5;
-      background: #eff6fb;
-      outline: none;
+    input:focus, select:focus { border-color: #3988f5; background: #eff6fb; outline: none; }
+    .time-row { display: flex; gap: 15px; margin-bottom: 0; }
+    .time-row input { width: 100%; margin-top: 2px; font-size: 15px; padding: 8px; }
+    .time-label { font-weight: normal; font-size: 13px; margin-bottom: 0; color: #577187; margin-top: 5px; }
+    #pulseFields { display: none; border-left: 2px solid #42d9c4; margin: 15px 0; padding: 10px 26px; background: #f8fafc; border-radius: 7px;}
+    .pulse-row { display: flex; gap: 10px; }
+    .pulse-row div { flex: 1; }
+    button, .toggle-btn {
+      width: 100%; margin-top: 28px; background: linear-gradient(90deg, #3988f5 0%, #42d9c4 100%);
+      color: white; border: none; padding: 12px; font-size: 18px; font-weight: 700; cursor: pointer;
+      border-radius: 8px; transition: transform 0.13s cubic-bezier(.16,.93,.69,1.08), box-shadow 0.15s;
+      box-shadow: 0 2px 14px rgba(66, 217, 196, 0.10); position: relative; z-index: 0; overflow: hidden;
     }
-    .time-row {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 0;
-    }
-    .time-row input {
-      width: 100%;
-      margin-top: 2px;
-      font-size: 15px;
-      padding: 8px;
-    }
-    .time-label {
-      font-weight: normal;
-      font-size: 13px;
-      margin-bottom: 0;
-      color: #577187;
-      margin-top: 5px;
-    }
-    button {
-      width: 100%;
-      margin-top: 28px;
-      background: linear-gradient(90deg, #3988f5 0%, #42d9c4 100%);
-      color: white;
-      border: none;
-      padding: 12px;
-      font-size: 18px;
-      font-weight: 700;
-      cursor: pointer;
-      border-radius: 8px;
-      transition: transform 0.13s cubic-bezier(.16,.93,.69,1.08), box-shadow 0.15s;
-      box-shadow: 0 2px 14px rgba(66, 217, 196, 0.10);
-      position: relative;
-      z-index: 0;
-      overflow: hidden;
-    }
-    button:before {
-      content: "";
-      position: absolute;
-      top:0; left:0; right:0; bottom:0;
+    .toggle-btn { margin-top: 18px; font-size: 16px; padding: 9px; }
+    button:before, .toggle-btn:before {
+      content: "";position: absolute;top:0;left:0;right:0;bottom:0;
       background: linear-gradient(120deg,rgba(255,255,255,0.13) 0%,rgba(255,255,255,0.04) 100%);
       z-index: -1;
     }
-    button:hover {
-      transform: scale(1.035);
-      box-shadow: 0 4px 26px rgba(66, 217, 196, 0.16);
-    }
-    button:active {
-      transform: scale(0.97);
-    }
-    #result {
-      text-align: center;
-      font-size: 21px;
-      font-weight: bold;
-      margin-top: 28px;
-      color: #168570;
-      opacity: 0;
-      animation: fadeResult .7s ease-in-out forwards;
-    }
+    button:hover, .toggle-btn:hover { transform: scale(1.035); box-shadow: 0 4px 26px rgba(66, 217, 196, 0.16); }
+    button:active, .toggle-btn:active { transform: scale(0.97); }
+    #result { text-align: center; font-size: 21px; font-weight: bold; margin-top: 28px; color: #168570;
+      opacity: 0; animation: fadeResult .7s ease-in-out forwards; }
     .shimmer {
       background: linear-gradient(90deg, #fff 15%, #e0f2fd 40%, #fff 65%);
       background-size: 200% 100%;
       animation: shimmerAnim 1.5s linear 1;
     }
-    @keyframes shimmerAnim {
-      0%   { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
-    @keyframes fadeResult {
-      to { opacity: 1; }
-    }
+    @keyframes shimmerAnim { 0%{background-position:-200% 0;} 100%{background-position:200% 0;} }
+    @keyframes fadeResult { to { opacity: 1; } }
   </style>
 </head>
 <body>
-
   <h1>Electroplating Thickness Calculator</h1>
-
   <div class="container">
     <label for="metal">Select Metal:</label>
     <select id="metal" onchange="setDefaults()">
@@ -140,10 +70,71 @@
       <option value="nickel">Nickel (Ni)</option>
       <option value="copper">Copper (Cu)</option>
     </select>
-
-    <label for="current">Current (A):</label>
+    <label for="efficiency">Efficiency (%):</label>
+    <input type="number" id="efficiency" placeholder="e.g. 95">
+    <label for="molarMass">Molar Mass (g/mol):</label>
+    <input type="number" id="molarMass" step="any">
+    <label for="valency">Valency (n):</label>
+    <input type="number" id="valency" step="any">
+    <label for="density">Density (g/cm³):</label>
+    <input type="number" id="density" step="any">
+    <label for="area">Select Area:</label>
+    <select id="area">
+      <option value="81">4-inch Wafer (≈81 cm²)</option>
+      <option value="182">6-inch Wafer (≈182 cm²)</option>
+      <option value="2.25">15×15 mm (2.25 cm²)</option>
+      <option value="4.84">22×22 mm (4.84 cm²)</option>
+    </select>
+    <button type="button" class="toggle-btn" onclick="togglePulse()">Reverse Pulse Plating</button>
+    <div id="pulseFields">
+      <div class="pulse-row">
+        <div>
+          <label for="tf">Forward ON time (s):</label>
+          <input type="number" id="tf" min="0">
+        </div>
+        <div>
+          <label for="tf_off">Forward OFF time (s):</label>
+          <input type="number" id="tf_off" min="0">
+        </div>
+      </div>
+      <div class="pulse-row">
+        <div>
+          <label for="tr">Reverse ON time (s):</label>
+          <input type="number" id="tr" min="0">
+        </div>
+        <div>
+          <label for="tr_off">Reverse OFF time (s):</label>
+          <input type="number" id="tr_off" min="0">
+        </div>
+      </div>
+      <div class="pulse-row">
+        <div>
+          <label for="If">Forward current (A):</label>
+          <input type="number" id="If" step="any">
+        </div>
+        <div>
+          <label for="Ir">Reverse current (A):</label>
+          <input type="number" id="Ir" step="any">
+        </div>
+      </div>
+      <label for="totalTime">Total Plating Time:</label>
+      <div class="time-row">
+        <div>
+          <input type="number" id="pulse_hours" min="0" placeholder="Hrs">
+          <div class="time-label">Hours</div>
+        </div>
+        <div>
+          <input type="number" id="pulse_minutes" min="0" max="59" placeholder="Min">
+          <div class="time-label">Minutes</div>
+        </div>
+        <div>
+          <input type="number" id="pulse_seconds" min="0" max="59" placeholder="Sec">
+          <div class="time-label">Seconds</div>
+        </div>
+      </div>
+    </div>
+    <label id="classicLabel" for="current" style="margin-top:20px">Current (A):</label>
     <input type="number" id="current" placeholder="Enter current in Amperes">
-
     <label>Time:</label>
     <div class="time-row">
       <div>
@@ -159,33 +150,12 @@
         <div class="time-label">Seconds</div>
       </div>
     </div>
-
-    <label for="efficiency">Efficiency (%):</label>
-    <input type="number" id="efficiency" placeholder="e.g. 95">
-
-    <label for="molarMass">Molar Mass (g/mol):</label>
-    <input type="number" id="molarMass" step="any">
-
-    <label for="valency">Valency (n):</label>
-    <input type="number" id="valency" step="any">
-
-    <label for="density">Density (g/cm³):</label>
-    <input type="number" id="density" step="any">
-
-    <label for="area">Select Area:</label>
-    <select id="area">
-      <option value="81">4-inch Wafer (≈81 cm²)</option>
-      <option value="182">6-inch Wafer (≈182 cm²)</option>
-      <option value="2.25">15×15 mm (2.25 cm²)</option>
-      <option value="4.84">22×22 mm (4.84 cm²)</option>
-    </select>
-
     <button onclick="calculateThickness()" id="calcBtn">Calculate Thickness</button>
-
     <div id="result"></div>
   </div>
 
   <script>
+    let pulseMode = false;
     function setDefaults() {
       const metal = document.getElementById('metal').value;
       if (metal === 'gold') {
@@ -203,46 +173,102 @@
       }
     }
 
+    function togglePulse() {
+      pulseMode = !pulseMode;
+      document.getElementById('pulseFields').style.display = pulseMode ? "block" : "none";
+      document.getElementById('current').style.display = pulseMode ? "none" : "block";
+      document.getElementById('classicLabel').style.display = pulseMode ? "none" : "block";
+      document.getElementById('hours').parentElement.parentElement.style.display = pulseMode ? "none" : "flex";
+      document.getElementsByClassName('time-row')[1].style.display = pulseMode ? "none" : "flex";
+      document.getElementsByClassName('time-row')[0].style.display = pulseMode ? "flex" : "flex"; // Pulse
+    }
+
     function calculateThickness() {
       const F = 96485;
-      const I = parseFloat(document.getElementById('current').value);
-
-      // Time input
-      const hrs = parseInt(document.getElementById('hours').value) || 0;
-      const mins = parseInt(document.getElementById('minutes').value) || 0;
-      const secs = parseInt(document.getElementById('seconds').value) || 0;
-      const t = (hrs * 3600) + (mins * 60) + secs;
-
       const E = parseFloat(document.getElementById('efficiency').value) / 100;
       const M = parseFloat(document.getElementById('molarMass').value);
       const n = parseFloat(document.getElementById('valency').value);
       const rho = parseFloat(document.getElementById('density').value);
       const A = parseFloat(document.getElementById('area').value);
-
       const resultDiv = document.getElementById('result');
       resultDiv.classList.remove('shimmer');
       resultDiv.style.opacity = 0;
 
-      if ([I, t, E, M, n, rho, A].some(val => isNaN(val) || val === 0)) {
+      // Pulse mode
+      if (pulseMode) {
+        const tf = parseFloat(document.getElementById('tf').value);
+        const tf_off = parseFloat(document.getElementById('tf_off').value) || 0;
+        const tr = parseFloat(document.getElementById('tr').value);
+        const tr_off = parseFloat(document.getElementById('tr_off').value) || 0;
+        const If = parseFloat(document.getElementById('If').value);
+        const Ir = parseFloat(document.getElementById('Ir').value);
+
+        // Pulse total time
+        const pulse_hrs = parseInt(document.getElementById('pulse_hours').value) || 0;
+        const pulse_mins = parseInt(document.getElementById('pulse_minutes').value) || 0;
+        const pulse_secs = parseInt(document.getElementById('pulse_seconds').value) || 0;
+        const Ttotal = (pulse_hrs * 3600) + (pulse_mins * 60) + pulse_secs;
+
+        // One cycle duration
+        const Tcycle = tf + tf_off + tr + tr_off;
+        if ([tf, tr, If, Ir, Tcycle, Ttotal, M, n, rho, A, E].some(v => isNaN(v) || v <= 0)) {
+          setTimeout(() => {
+            resultDiv.innerHTML = "⚠️ Please fill all pulse plating values correctly.";
+            resultDiv.style.color = "#c0392b";
+            resultDiv.classList.add('shimmer');
+            resultDiv.style.opacity = 1;
+          }, 160);
+          return;
+        }
+        const Ncycles = Math.floor(Ttotal / Tcycle);
+        const tf_total = Ncycles * tf;
+        const tr_total = Ncycles * tr;
+        const Qnet = (If * tf_total) - (Ir * tr_total);
+
+        // Net charge passed (Coulombs), with efficiency
+        const Qeff = Qnet * E;
+
+        // Faraday's Law
+        const mass = (M * Qeff) / (n * F);
+        const thickness = (mass / (rho * A)) * 1e4;
+
         setTimeout(() => {
-          resultDiv.innerHTML = "⚠️ Please fill all values correctly.";
-          resultDiv.style.color = "#c0392b";
+          resultDiv.innerHTML =
+            "Estimated Reverse Pulse Thickness: <span style='color:#d9643a'>" + thickness.toFixed(3) + " µm</span><br>" +
+            "(Cycles: " + Ncycles + ", Forward ON total: " + tf_total + " s, Reverse ON total: " + tr_total + " s)";
+          resultDiv.style.color = "#d9643a";
           resultDiv.classList.add('shimmer');
           resultDiv.style.opacity = 1;
-        }, 160);
-        return;
+        }, 180);
+
+      } else {
+        // Classic mode
+        const I = parseFloat(document.getElementById('current').value);
+        const hrs = parseInt(document.getElementById('hours').value) || 0;
+        const mins = parseInt(document.getElementById('minutes').value) || 0;
+        const secs = parseInt(document.getElementById('seconds').value) || 0;
+        const t = (hrs * 3600) + (mins * 60) + secs;
+
+        if ([I, t, E, M, n, rho, A].some(val => isNaN(val) || val === 0)) {
+          setTimeout(() => {
+            resultDiv.innerHTML = "⚠️ Please fill all values correctly.";
+            resultDiv.style.color = "#c0392b";
+            resultDiv.classList.add('shimmer');
+            resultDiv.style.opacity = 1;
+          }, 160);
+          return;
+        }
+
+        const mass = (I * t * M * E) / (n * F);
+        const thickness = (mass / (rho * A)) * 1e4;
+        setTimeout(() => {
+          resultDiv.innerHTML =
+            "Estimated Coating Thickness: <span style='color:#2d45c1'>" + thickness.toFixed(3) + " µm</span>";
+          resultDiv.style.color = "#168570";
+          resultDiv.classList.add('shimmer');
+          resultDiv.style.opacity = 1;
+        }, 180);
       }
-
-      const mass = (I * t * M * E) / (n * F);
-      const thickness = (mass / (rho * A)) * 1e4;
-
-      setTimeout(() => {
-        resultDiv.innerHTML =
-          "Estimated Coating Thickness: <span style='color:#2d45c1'>" + thickness.toFixed(3) + " µm</span>";
-        resultDiv.style.color = "#168570";
-        resultDiv.classList.add('shimmer');
-        resultDiv.style.opacity = 1;
-      }, 180);
     }
 
     window.onload = setDefaults;
