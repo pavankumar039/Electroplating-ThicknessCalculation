@@ -1,278 +1,347 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Electroplating Thickness Calculator</title>
+  <title>Multi-Step Electroplating Thickness Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
+    html, body { margin:0; padding:0; }
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(135deg, #f4f7fb 0%, #e0e7ef 100%);
-      padding: 40px;
+      background: linear-gradient(120deg, #e8eefb 0%, #f8fbff 100%);
+      padding: 5vw 0 27vw 0;
       min-height: 100vh;
+      transition: background 0.3s;
     }
-    h1 { text-align: center; color: #2c3e50; margin-bottom: 25px; letter-spacing: 1.2px; }
-    .container {
+    h1 { text-align: center; font-size:1.6em; letter-spacing:.04em; margin-bottom:2vw;}
+    .box {
       background: #fff;
-      max-width: 650px;
-      margin: 30px auto;
-      padding: 30px 38px 35px 38px;
-      border-radius: 14px;
-      box-shadow: 0 8px 32px rgba(44,62,80,0.14), 0 1.5px 3px rgba(0,0,0,0.03);
-      opacity: 0;
-      transform: translateY(40px);
-      animation: fadeUp 1s cubic-bezier(.3,1.5,.5,1) forwards;
+      border-radius: 13px;
+      box-shadow: 0 3px 17px #adcde9;
+      padding: 18px 12px;
+      max-width: 900px;
+      margin: 0 auto;
+      animation: fadeUp .6s cubic-bezier(.22,1.1,.52,1.1);
+      transition: background 0.3s;
     }
-    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
-    label { font-weight: 600; display: block; margin-top: 18px; color: #39587a; letter-spacing: 0.03em; }
-    input, select {
-      width: 100%; padding: 10px; margin-top: 6px; border-radius: 7px;
-      border: 1.5px solid #bfc7d1; font-size: 16px; margin-bottom: 3px; background: #f5f8fb; transition: border 0.2s;
+    @keyframes fadeUp { from {opacity:0; transform:translateY(40px);} to{opacity:1;transform:translateY(0);} }
+    .main-row, .controls-row {
+      display: flex; flex-wrap: wrap; gap:18px; margin-bottom:16px;
+      align-items: center; justify-content: center;
     }
-    input:focus, select:focus { border-color: #3988f5; background: #eff6fb; outline: none; }
-    .time-row { display: flex; gap: 15px; margin-bottom: 0; }
-    .time-row input { width: 100%; margin-top: 2px; font-size: 15px; padding: 8px; }
-    .time-label { font-weight: normal; font-size: 13px; margin-bottom: 0; color: #577187; margin-top: 5px; }
-    #pulseFields { display: none; border-left: 2px solid #42d9c4; margin: 15px 0; padding: 10px 26px; background: #f8fafc; border-radius: 7px;}
-    .pulse-row { display: flex; gap: 10px; }
-    .pulse-row div { flex: 1; }
-    button, .toggle-btn {
-      width: 100%; margin-top: 28px; background: linear-gradient(90deg, #3988f5 0%, #42d9c4 100%);
-      color: white; border: none; padding: 12px; font-size: 18px; font-weight: 700; cursor: pointer;
-      border-radius: 8px; transition: transform 0.13s cubic-bezier(.16,.93,.69,1.08), box-shadow 0.15s;
-      box-shadow: 0 2px 14px rgba(66, 217, 196, 0.10); position: relative; z-index: 0; overflow: hidden;
+    .main-row label, .controls-row label { min-width:84px;}
+    .main-row input, .main-row select, .controls-row input, .controls-row select { min-width:58px; margin-right:6px; font-size:15px;}
+    .controls-row { gap:13px; margin-bottom:14px;}
+    #stepsList { margin-top:14px;}
+    .step-block {
+      background: var(--step-bg, #f9fcff);
+      border-radius:10px;
+      box-shadow: 0 1.5px 9px #dde7f7;
+      padding:13px 7px;
+      margin-bottom:13px;
+      border:1.5px solid #dceefd;
+      position:relative;
+      max-width:690px;
+      animation: fadeStep .75s cubic-bezier(.22,1.1,.52,1) backwards;
     }
-    .toggle-btn { margin-top: 18px; font-size: 16px; padding: 9px; }
-    button:before, .toggle-btn:before {
-      content: "";position: absolute;top:0;left:0;right:0;bottom:0;
-      background: linear-gradient(120deg,rgba(255,255,255,0.13) 0%,rgba(255,255,255,0.04) 100%);
-      z-index: -1;
+    @keyframes fadeStep { from{opacity:0;transform:scale(.97);} to{opacity:1;transform:scale(1);} }
+    .step-title { font-weight:600; font-size:1.16em; margin-bottom:8px; letter-spacing:.03em; color: var(--step-title, #23559b); }
+    .step-row { display:flex; gap:15px; flex-wrap:wrap; align-items:center;}
+    .step-row input {width:85px;}
+    .param-group {display:flex; flex-direction:column; gap:3.7px; align-items:center;}
+    .step-actions button { background:#fd6e5a; color:#fff; border:none; border-radius:6px; padding:5px 11px; font-size:.97em;}
+    .type-select { margin-right:15px; padding:6px 8px;}
+    .big-button {
+      width: 98%; 
+      background: var(--button-bg, #23559b);
+      color: #fff; font-weight: bold; font-size: 1.25em; padding: 17px 0;
+      border: none; border-radius: 1.5em; box-shadow: 0 2px 18px #b2c2c2;
+      margin: 30px auto 16px auto; display: block; letter-spacing: .04em;
+      cursor: pointer; transition: box-shadow .2s, transform .13s, background .26s;
+      position: relative; overflow: hidden;
+      background-size: 170% 170%;
+      background-position: 60% 40%;
     }
-    button:hover, .toggle-btn:hover { transform: scale(1.035); box-shadow: 0 4px 26px rgba(66, 217, 196, 0.16); }
-    button:active, .toggle-btn:active { transform: scale(0.97); }
-    #result { text-align: center; font-size: 21px; font-weight: bold; margin-top: 28px; color: #168570;
-      opacity: 0; animation: fadeResult .7s ease-in-out forwards; }
-    .shimmer {
-      background: linear-gradient(90deg, #fff 15%, #e0f2fd 40%, #fff 65%);
-      background-size: 200% 100%;
-      animation: shimmerAnim 1.5s linear 1;
+    .big-button:active {transform:scale(.97); box-shadow: 0 0px 8px #e5c96a;}
+    /* Gradient gold */
+    .big-button.gold {
+      --button-bg:linear-gradient(90deg,#ffe04e 8%,#f9c900 35%,#ffe669 75%,#e0b41f 100%);
+      color: #7a6612; 
+      text-shadow:0 1px 2px #fff4bf,0 3px 16px #edd254;
+      font-weight:bold;
+      box-shadow: 0 4px 29px #ecd563;
     }
-    @keyframes shimmerAnim { 0%{background-position:-200% 0;} 100%{background-position:200% 0;} }
-    @keyframes fadeResult { to { opacity: 1; } }
+    .big-button.gold:active::after {
+      opacity: .5;
+      background: linear-gradient(109deg,rgba(255,255,182,0.18) 45%,rgba(237,220,92,.48) 88%);
+    }
+    .big-button:after {
+      content:"";
+      position:absolute;
+      left:0;top:0;width:100%;height:100%;
+      background: linear-gradient(90deg,rgba(255,255,255,0.06) 12%,rgba(255,255,220,0.08) 56%,rgba(255,254,195,0.15) 100%);
+      opacity:0;pointer-events:none;transition:opacity.25s;
+    }
+    .big-button:active:after {opacity:1;}
+    #results, #totalThickness {
+      margin-top:10px;
+      background: var(--results-bg, #eef5fc);
+      border-radius: 7px;
+      padding: 9px 7px 12px 7px;
+      animation: fadeResult .61s cubic-bezier(.22,1.15,.52,1.2);
+      border:1px solid var(--results-border, #f1e4be);
+      color: var(--results-color,#23559b);
+    }
+    #results div {line-height:1.67;}
+    #results b, #totalThickness b {color: var(--results-title,#23559b);}
+    #totalThickness { font-size:1.18em; background:var(--total-bg,#e5f4e9); padding:10px 0; color: var(--total-color,#0e6756);}
+    #customAreaDiv {display: none;margin-top:2px;}
+    #customArea {width:83px;}
+    #historyArea {
+      margin: 40px auto 0 auto;
+      max-width:900px;
+      background: var(--hist-bg, #f7fbff);
+      border-radius: 17px; box-shadow:0 0 18px #b7d7ef; padding:17px 13px;
+      transition: background 0.3s;
+    }
+    #historyTitle { font-size:1.08em; color: var(--hist-title,#1e5177); margin-bottom:11px; letter-spacing:.03em;}
+    .hist-entry {padding:5px 5px 5px 9px; margin-bottom:7px; background: var(--hist-entry-bg, linear-gradient(120deg,#ebf7fc 60%,#dfeffa 100%)); border-radius:8px;}
+    .hist-step {color:var(--hist-step,#1358a7);margin-right:7px;}
+    .hist-total {color:var(--hist-total,#0d885f);font-weight:bold;}
+    @keyframes fadeResult {from {opacity:0;} to {opacity:1;} }
+    /* Gold theme */
+    body.gold, .box.gold {background: linear-gradient(120deg,#fffbe0 0%,#fffef2 100%);}
+    .step-block.gold {--step-bg:#fffbe4; --step-title:#947215;}
+    #results.gold, #totalThickness.gold {
+      --results-bg:#fff8d1; --results-title:#947215; --results-color:#8e7706; --results-border:#ffe795;
+      --total-bg: #fff6c1; --total-color:#a1840c;
+    }
+    #historyArea.gold {
+      --hist-bg:#fffbe5; --hist-title:#aa943b; --hist-entry-bg:linear-gradient(120deg,#fff5c8 55%,#fae89d 100%);
+      --hist-step: #ad901e; --hist-total:#ba8307;
+    }
+    /* Nickel theme */
+    body.nickel, .box.nickel {background: linear-gradient(128deg,#e6f5ff 0%,#f5fcff 98%);}
+    .step-block.nickel {--step-bg:#eaf7fd; --step-title:#206d9c;}
+    .big-button.nickel {--button-bg:#79befc;}
+    #results.nickel, #totalThickness.nickel {
+      --results-bg:#e4f4fd; --results-title:#206d9c; --results-color:#206d9c; --results-border:#c2eafe;
+      --total-bg:#d8f2fa; --total-color:#206eab;
+    }
+    #historyArea.nickel {
+      --hist-bg:#e1f4fd; --hist-title:#1e5177; --hist-entry-bg:linear-gradient(120deg,#ddf1fa 35%,#c9eafc 100%);
+      --hist-step:#206d9c; --hist-total:#0d739e;
+    }
+    /* Copper theme */
+    body.copper, .box.copper {background: linear-gradient(128deg,#fff6ed 0%,#fbede3 98%);}
+    .step-block.copper {--step-bg:#fdede5; --step-title:#ad622a;}
+    .big-button.copper {--button-bg:#f19756;}
+    #results.copper, #totalThickness.copper {
+      --results-bg:#fae3cf; --results-title:#ad622a; --results-color:#ad622a; --results-border:#f1d3ba;
+      --total-bg:#fae3cf; --total-color:#ad622a;
+    }
+    #historyArea.copper {
+      --hist-bg:#fdefe3; --hist-title:#a85c38; --hist-entry-bg:linear-gradient(120deg,#fad7bd 35%,#fdede5 100%);
+      --hist-step:#ad622a; --hist-total:#a85c38;
+    }
   </style>
 </head>
 <body>
-  <h1>Electroplating Thickness Calculator</h1>
-  <div class="container">
-    <label for="metal">Select Metal:</label>
-    <select id="metal" onchange="setDefaults()">
-      <option value="gold">Gold (Au)</option>
-      <option value="nickel">Nickel (Ni)</option>
-      <option value="copper">Copper (Cu)</option>
-    </select>
-    <label for="efficiency">Efficiency (%):</label>
-    <input type="number" id="efficiency" placeholder="e.g. 95">
-    <label for="molarMass">Molar Mass (g/mol):</label>
-    <input type="number" id="molarMass" step="any">
-    <label for="valency">Valency (n):</label>
-    <input type="number" id="valency" step="any">
-    <label for="density">Density (g/cm³):</label>
-    <input type="number" id="density" step="any">
-    <label for="area">Select Area:</label>
-    <select id="area">
-      <option value="81">4-inch Wafer (≈81 cm²)</option>
-      <option value="182">6-inch Wafer (≈182 cm²)</option>
-      <option value="2.25">15×15 mm (2.25 cm²)</option>
-      <option value="4.84">22×22 mm (4.84 cm²)</option>
-    </select>
-    <button type="button" class="toggle-btn" onclick="togglePulse()">Reverse Pulse/Pulse Plating</button>
-    <div id="pulseFields">
-      <div class="pulse-row">
-        <div>
-          <label for="tf">Forward ON time (s):</label>
-          <input type="number" id="tf" min="0">
-        </div>
-        <div>
-          <label for="tf_off">Forward OFF time (s):</label>
-          <input type="number" id="tf_off" min="0">
-        </div>
-      </div>
-      <div class="pulse-row">
-        <div>
-          <label for="tr">Reverse ON time (s, optional):</label>
-          <input type="number" id="tr" min="0" placeholder="Optional">
-        </div>
-        <div>
-          <label for="tr_off">Reverse OFF time (s, optional):</label>
-          <input type="number" id="tr_off" min="0" placeholder="Optional">
-        </div>
-      </div>
-      <div class="pulse-row">
-        <div>
-          <label for="If">Forward current (A):</label>
-          <input type="number" id="If" step="any">
-        </div>
-        <div>
-          <label for="Ir">Reverse current (A, optional):</label>
-          <input type="number" id="Ir" step="any" placeholder="Optional">
-        </div>
-      </div>
-      <label for="totalTime">Total Plating Time:</label>
-      <div class="time-row">
-        <div>
-          <input type="number" id="pulse_hours" min="0" placeholder="Hrs">
-          <div class="time-label">Hours</div>
-        </div>
-        <div>
-          <input type="number" id="pulse_minutes" min="0" max="59" placeholder="Min">
-          <div class="time-label">Minutes</div>
-        </div>
-        <div>
-          <input type="number" id="pulse_seconds" min="0" max="59" placeholder="Sec">
-          <div class="time-label">Seconds</div>
-        </div>
-      </div>
-    </div>
-    <label id="classicLabel" for="current" style="margin-top:20px">Current (A):</label>
-    <input type="number" id="current" placeholder="Enter current in Amperes">
-    <label>Time:</label>
-    <div class="time-row">
-      <div>
-        <input type="number" id="hours" min="0" placeholder="Hrs">
-        <div class="time-label">Hours</div>
-      </div>
-      <div>
-        <input type="number" id="minutes" min="0" max="59" placeholder="Min">
-        <div class="time-label">Minutes</div>
-      </div>
-      <div>
-        <input type="number" id="seconds" min="0" max="59" placeholder="Sec">
-        <div class="time-label">Seconds</div>
-      </div>
-    </div>
-    <button onclick="calculateThickness()" id="calcBtn">Calculate Thickness</button>
-    <div id="result"></div>
+<h1>Multi-Step Electroplating Thickness Calculator</h1>
+<div class="box" id="mainBox">
+  <div class="main-row">
+    <label>Metal:
+      <select id="metal" onchange="onMetalChange()">
+        <option value="gold">Gold (Au)</option>
+        <option value="nickel">Nickel (Ni)</option>
+        <option value="copper">Copper (Cu)</option>
+      </select>
+    </label>
+    <label>Efficiency (%): <input type="number" id="efficiency" value="95"></label>
+    <label>Molar Mass: <input type="number" id="molarMass" value="196.96657"></label>
+    <label>Valency: <input type="number" id="valency" value="1"></label>
+    <label>Density: <input type="number" id="density" value="19.32"></label>
+    <label>Area:
+      <select id="areaSelect" onchange="toggleCustomArea()">
+        <option value="81">4-inch wafer (81 cm²)</option>
+        <option value="182">6-inch wafer (182 cm²)</option>
+        <option value="2.25">15×15 mm (2.25 cm²)</option>
+        <option value="4.84">22×22 mm (4.84 cm²)</option>
+        <option value="custom">Custom...</option>
+      </select>
+    </label>
+    <span id="customAreaDiv"><input type="number" id="customArea" placeholder="Area cm²"></span>
   </div>
-
-  <script>
-    let pulseMode = false;
-    function setDefaults() {
-      const metal = document.getElementById('metal').value;
-      if (metal === 'gold') {
-        document.getElementById('molarMass').value = 196.96657;
-        document.getElementById('density').value = 19.32;
-        document.getElementById('valency').value = 1;
-      } else if (metal === 'nickel') {
-        document.getElementById('molarMass').value = 58.6934;
-        document.getElementById('density').value = 8.908;
-        document.getElementById('valency').value = 2;
-      } else if (metal === 'copper') {
-        document.getElementById('molarMass').value = 63.546;
-        document.getElementById('density').value = 8.96;
-        document.getElementById('valency').value = 2;
+  <div class="controls-row">
+    <label>Number of Steps: <input type="number" id="numSteps" value="2" min="1"></label>
+    <button onclick="renderSteps()">Set Steps</button>
+  </div>
+  <button onclick="calculateAllAnimated()" class="big-button gold" id="calcBtn">Calculate Total Thickness</button>
+  <div id="stepsList"></div>
+  <div id="results"></div>
+  <div id="totalThickness"></div>
+</div>
+<div id="historyArea">
+  <div id="historyTitle">Calculation History</div>
+  <div id="historyList"></div>
+</div>
+<script>
+const metalPresets = {
+  gold:    {m:196.96657, d:19.32, v:1},
+  nickel:  {m:58.6934,   d:8.908, v:2},
+  copper:  {m:63.546,    d:8.96,  v:2}
+};
+let historyEntries = [];
+function onMetalChange() {
+  const m = document.getElementById("metal").value;
+  document.getElementById("molarMass").value = metalPresets[m].m;
+  document.getElementById("density").value   = metalPresets[m].d;
+  document.getElementById("valency").value   = metalPresets[m].v;
+  setTheme(m);
+}
+function setTheme(metal) {
+  document.body.classList.remove('gold','nickel','copper');
+  document.getElementById('mainBox').className = 'box ' + metal;
+  document.getElementById('results').className = metal;
+  document.getElementById('totalThickness').className = metal;
+  document.getElementById('historyArea').className = metal;
+  let stepBlocks = document.querySelectorAll('.step-block');
+  stepBlocks.forEach(sb => { sb.className = 'step-block ' + metal; });
+  let btn = document.getElementById('calcBtn');
+  btn.className = `big-button ${metal}`;
+}
+function toggleCustomArea() {
+  const areaSel = document.getElementById('areaSelect');
+  const customDiv = document.getElementById('customAreaDiv');
+  customDiv.style.display = (areaSel.value==='custom')?'inline':'none';
+}
+function getAreaValue() {
+  const areaSel = document.getElementById('areaSelect');
+  return (areaSel.value==='custom') ? parseFloat(document.getElementById('customArea').value)||0 : parseFloat(areaSel.value)||0;
+}
+function renderSteps() {
+  let num = parseInt(document.getElementById('numSteps').value)||1;
+  let html='';
+  for(let i=0;i<num;i++) {
+    html += `
+    <div class="step-block gold" id="step_${i}">
+      <div class="step-title">Step ${i+1}: 
+        <select class="type-select" id="type_${i}" onchange="showHideFields(${i});setTheme(document.getElementById('metal').value);">
+          <option value="dc">DC Plating</option>
+          <option value="pulse">Pulse Plating</option>
+          <option value="reverse">Reverse Pulse Plating</option>
+        </select>
+        <button onclick="removeStep(${i})">Remove</button>
+      </div>
+      <div class="step-row">
+        <span id="dcFields_${i}">
+          <label>Current (A): <input type="number" id="dcI_${i}"></label>
+          <label>Time (s): <input type="number" id="dct_${i}"></label>
+        </span>
+        <span id="pulseFields_${i}" style="display:none;">
+          <label>Fwd Current (A): <input type="number" id="If_${i}"></label>
+          <label>Fwd ON (s): <input type="number" id="tf_${i}"></label>
+          <label>Fwd OFF (s): <input type="number" id="tf_off_${i}"></label>
+        </span>
+        <span id="reverseFields_${i}" style="display:none;">
+          <label>Rev Current (A): <input type="number" id="Ir_${i}"></label>
+          <label>Rev ON (s): <input type="number" id="tr_${i}"></label>
+          <label>Rev OFF (s): <input type="number" id="tr_off_${i}"></label>
+        </span>
+        <label>Total Plating Time (s): <input type="number" id="Ttotal_${i}"></label>
+      </div>
+    </div>
+    `;
+  }
+  document.getElementById('stepsList').innerHTML=html;
+  setTheme(document.getElementById('metal').value);
+}
+function removeStep(i){document.getElementById('step_'+i).style.display='none';}
+function showHideFields(i){
+  let t=document.getElementById('type_'+i).value;
+  document.getElementById('dcFields_'+i).style.display = (t==='dc')?'inline':'none';
+  document.getElementById('pulseFields_'+i).style.display = (t!=='dc')?'inline':'none';
+  document.getElementById('reverseFields_'+i).style.display = (t==='reverse')?'inline':'none';
+}
+function calculateAllAnimated(){
+  let btn = document.getElementById('calcBtn');
+  btn.style.transform = 'scale(1.12)';
+  btn.style.boxShadow = "0 2px 32px #e6c53a, 0 1px 13px #efdc90";
+  setTimeout(()=>{
+    btn.style.transform='scale(1)';
+    btn.style.boxShadow = "";
+  },240);
+  setTimeout(calculateAll,180);
+}
+function calculateAll(){
+  const efficiency = +document.getElementById("efficiency").value || 0;
+  const M = +document.getElementById("molarMass").value || 0;
+  const n = +document.getElementById("valency").value || 0;
+  const rho = +document.getElementById("density").value || 0;
+  const A = getAreaValue();
+  const F = 96485;
+  let total = 0, resultHtml = "", histSteps = [];
+  let numSteps = parseInt(document.getElementById('numSteps').value)||0;
+  for(let i=0;i<numSteps;i++) {
+    let block = document.getElementById('step_'+i);
+    if(block && block.style.display==='none'){continue;}
+    let t = document.getElementById('type_'+i).value, thickness=0;
+    if(t==='dc') {
+      const I = +document.getElementById(`dcI_${i}`).value || 0;
+      const time = +document.getElementById(`dct_${i}`).value || 0;
+      let mass = 0;
+      if(n && rho && A && efficiency && M && F && time) {
+        mass = (I * time * M * (efficiency/100)) / (n * F);
+        thickness = (mass / (rho * A)) * 1e4;
       }
-    }
-
-    function togglePulse() {
-      pulseMode = !pulseMode;
-      document.getElementById('pulseFields').style.display = pulseMode ? "block" : "none";
-      document.getElementById('current').style.display = pulseMode ? "none" : "block";
-      document.getElementById('classicLabel').style.display = pulseMode ? "none" : "block";
-      document.getElementById('hours').parentElement.parentElement.style.display = pulseMode ? "none" : "flex";
-      document.getElementsByClassName('time-row')[1].style.display = pulseMode ? "none" : "flex";
-      document.getElementsByClassName('time-row')[0].style.display = pulseMode ? "flex" : "flex";
-    }
-
-    function calculateThickness() {
-      const F = 96485;
-      const E = parseFloat(document.getElementById('efficiency').value) / 100;
-      const M = parseFloat(document.getElementById('molarMass').value);
-      const n = parseFloat(document.getElementById('valency').value);
-      const rho = parseFloat(document.getElementById('density').value);
-      const A = parseFloat(document.getElementById('area').value);
-      const resultDiv = document.getElementById('result');
-      resultDiv.classList.remove('shimmer');
-      resultDiv.style.opacity = 0;
-
-      if (pulseMode) {
-        // Pulse Plating
-        const tf = parseFloat(document.getElementById('tf').value);
-        const tf_off = parseFloat(document.getElementById('tf_off').value) || 0;
-        const tr = parseFloat(document.getElementById('tr').value) || 0;
-        const tr_off = parseFloat(document.getElementById('tr_off').value) || 0;
-        const If = parseFloat(document.getElementById('If').value);
-        const Ir = parseFloat(document.getElementById('Ir').value) || 0;
-
-        const pulse_hrs = parseInt(document.getElementById('pulse_hours').value) || 0;
-        const pulse_mins = parseInt(document.getElementById('pulse_minutes').value) || 0;
-        const pulse_secs = parseInt(document.getElementById('pulse_seconds').value) || 0;
-        const Ttotal = (pulse_hrs * 3600) + (pulse_mins * 60) + pulse_secs;
-
-        // Cycle calculation
-        const Tcycle = tf + tf_off + tr + tr_off;
-        if ([tf, If, Tcycle, Ttotal, M, n, rho, A, E].some(v => isNaN(v) || v <= 0)) {
-          setTimeout(() => {
-            resultDiv.innerHTML = "⚠️ Please fill at least forward pulse fields and check input values.";
-            resultDiv.style.color = "#c0392b";
-            resultDiv.classList.add('shimmer');
-            resultDiv.style.opacity = 1;
-          }, 160);
-          return;
-        }
-        const Ncycles = Math.floor(Ttotal / Tcycle);
-        const tf_total = Ncycles * tf;
-        const tr_total = Ncycles * tr;
-        let Qnet;
-        // Forward only if reverse current/time not provided
-        if (Ir === 0 || tr === 0) {
-          Qnet = If * tf_total;
-        } else {
-          Qnet = (If * tf_total) - (Ir * tr_total);
-        }
-
-        // Net charge passed (Coulombs), with efficiency
-        const Qeff = Qnet * E;
-        const mass = (M * Qeff) / (n * F);
-        const thickness = (mass / (rho * A)) * 1e4;
-        setTimeout(() => {
-          resultDiv.innerHTML =
-            "<b>Estimated Pulse Plating Thickness:</b> <span style='color:#d9643a'>" + thickness.toFixed(3) + " µm</span><br>" +
-            "(Cycles: " + Ncycles + ", Forward ON total: " + tf_total + " s" +
-            (tr_total > 0 ? ", Reverse ON total: " + tr_total + " s" : "") + ")";
-          resultDiv.style.color = "#d9643a";
-          resultDiv.classList.add('shimmer');
-          resultDiv.style.opacity = 1;
-        }, 180);
-
-      } else {
-        // Classic mode
-        const I = parseFloat(document.getElementById('current').value);
-        const hrs = parseInt(document.getElementById('hours').value) || 0;
-        const mins = parseInt(document.getElementById('minutes').value) || 0;
-        const secs = parseInt(document.getElementById('seconds').value) || 0;
-        const t = (hrs * 3600) + (mins * 60) + secs;
-        if ([I, t, E, M, n, rho, A].some(val => isNaN(val) || val === 0)) {
-          setTimeout(() => {
-            resultDiv.innerHTML = "⚠️ Please fill all values correctly.";
-            resultDiv.style.color = "#c0392b";
-            resultDiv.classList.add('shimmer');
-            resultDiv.style.opacity = 1;
-          }, 160);
-          return;
-        }
-        const mass = (I * t * M * E) / (n * F);
-        const thickness = (mass / (rho * A)) * 1e4;
-        setTimeout(() => {
-          resultDiv.innerHTML =
-            "<b>Estimated Coating Thickness:</b> <span style='color:#2d45c1'>" + thickness.toFixed(3) + " µm</span>";
-          resultDiv.style.color = "#168570";
-          resultDiv.classList.add('shimmer');
-          resultDiv.style.opacity = 1;
-        }, 180);
+      resultHtml += `<div>Step ${i+1} (DC): <b>${thickness.toFixed(3)} µm</b></div>`;
+      histSteps.push(`DC(${I}A,${time}s):${thickness.toFixed(3)}µm`);
+    } else {
+      const If = +document.getElementById(`If_${i}`).value || 0,
+            tf = +document.getElementById(`tf_${i}`).value || 0,
+            tf_off = +document.getElementById(`tf_off_${i}`).value || 0,
+            Ir = +document.getElementById(`Ir_${i}`).value || 0,
+            tr = +document.getElementById(`tr_${i}`).value || 0,
+            tr_off = +document.getElementById(`tr_off_${i}`).value || 0,
+            Ttotal = +document.getElementById(`Ttotal_${i}`).value || 0;
+      const Tcycle = tf + tf_off + tr + tr_off;
+      let Ncycles = Tcycle ? Math.floor(Ttotal / Tcycle) : 0;
+      let tf_total = Ncycles * tf, tr_total = Ncycles * tr;
+      let Qnet = (If * tf_total) - (Ir * tr_total);
+      if (If === 0 && tf === 0 && Ir > 0 && tr > 0) Qnet = -(Ir * tr_total);
+      let mass = 0;
+      if(n && rho && A && efficiency && M && F){
+        const Qeff = Math.abs(Qnet) * (efficiency/100);
+        mass = (M * Qeff) / (n * F);
+        thickness = (mass / (rho * A)) * 1e4;
       }
+      resultHtml += `<div>Step ${i+1} (${t==='pulse'?'Pulse':'Reverse Pulse'}): <b>${thickness.toFixed(3)} µm</b></div>`;
+      histSteps.push(`${t==='pulse'?'Pulse':'RevPulse'}(F:${If}A,ON:${tf}s,OFF:${tf_off}s R:${Ir}A,ON:${tr}s,OFF:${tr_off}s,Tot:${Ttotal}s):${thickness.toFixed(3)}µm`);
     }
-
-    window.onload = setDefaults;
-  </script>
+    total += thickness;
+  }
+  let metal = document.getElementById("metal").value;
+  document.getElementById("results").className = metal;
+  document.getElementById("totalThickness").className = metal;
+  document.getElementById("mainBox").className = `box ${metal}`;
+  let stepBlocks = document.querySelectorAll('.step-block');
+  stepBlocks.forEach(sb=>sb.className = 'step-block ' + metal);
+  document.getElementById("calcBtn").className = `big-button ${metal}`;
+  document.getElementById("results").innerHTML = resultHtml;
+  document.getElementById("totalThickness").innerHTML = `<div id="totalThickness"><b>Total Thickness: ${total.toFixed(3)} µm</b></div>`;
+  // Add to history
+  if(resultHtml) {
+    historyEntries.unshift({steps: histSteps, total: total, metal: metal});
+    let h = '';
+    historyEntries.forEach((entry, idx) => {
+      h += `<div class="hist-entry ${entry.metal}">
+        <span class="hist-step">${entry.steps.join(' | ')}</span>
+        <span class="hist-total">Total=${entry.total.toFixed(3)} µm</span>
+      </div>`;
+    });
+    document.getElementById('historyList').innerHTML = h;
+  }
+}
+window.onload = () => { onMetalChange(); renderSteps(); };
+</script>
 </body>
 </html>
